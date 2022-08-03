@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Gitcheckout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/sefbeck/afolabiproj.git'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'cd SampleWebApp && mvn test'
+            }
+        }
+        stage('Build Maven') {
+            steps {
+                sh 'cd SampleWebApp && mvn package'
+            }
+        }
+        stage('Deploy to tomcat') {
+            steps {
+                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://54.172.145.169:8080/')], contextPath: 'download', war: '**/*.war'  
+            }
+        }    
+    }   
+}    
